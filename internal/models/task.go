@@ -10,9 +10,8 @@ type Task struct {
 	CompletedAt time.Time `json:"completed_at" db:"completed_at"`
 }
 
-func NewTask(id uint64, title string) *Task {
+func NewTask(title string) *Task {
 	return &Task{
-		ID:        id,
 		Title:     title,
 		Done:      false,
 		CreatedAt: time.Now(),
