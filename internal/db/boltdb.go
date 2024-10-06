@@ -4,6 +4,7 @@ import (
 	"cobratodoapp/internal/convert"
 	"cobratodoapp/internal/models"
 	"encoding/json"
+	"errors"
 
 	"github.com/boltdb/bolt"
 )
@@ -43,8 +44,8 @@ func (b *BoltDB) Tasks() *models.TaskList {
 	return &taskList
 }
 
-func (b *BoltDB) Add(task *models.Task) {
-	_ = b.DB.Update(func(tx *bolt.Tx) error {
+func (b *BoltDB) Add(task *models.Task) error {
+	return b.DB.Update(func(tx *bolt.Tx) error {
 		b := tx.Bucket([]byte("tasks"))
 		id, _ := b.NextSequence()
 		task.ID = id
@@ -73,6 +74,11 @@ func (b *BoltDB) Complete(id uint64) error {
 
 func (b *BoltDB) Remove(id uint64) error {
 	return b.DB.Update(func(tx *bolt.Tx) error {
+		b := tx.Bucket([]byte("tasks"))
+		if task := b.Get(convert.ConvertIDToByte(id)); task == nil {
+			return errors.New("Task not found")
+		}
+
 		return tx.Bucket([]byte("tasks")).Delete(convert.ConvertIDToByte(id))
 	})
 }

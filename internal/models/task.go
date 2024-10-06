@@ -22,3 +22,15 @@ func (t *Task) Complete() {
 	t.Done = true
 	t.CompletedAt = time.Now()
 }
+
+func (t *Task) GetCompletedAt() string {
+	var result string
+
+	if t.CompletedAt.IsZero() {
+		result = "-"
+	} else {
+		result = t.CompletedAt.Format("2006-01-02 15:04:05")
+	}
+
+	return result
+}
